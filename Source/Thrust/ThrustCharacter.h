@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Rifle.h"
 #include "Katana.h"
 #include "ThrustCharacter.generated.h"
@@ -78,9 +79,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMeshComponent;
-
+	
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere)
+	class USpringArmComponent* springArmComponent;
 
 	UPROPERTY(EditAnywhere)
 	ARifle* Rifle;

@@ -5,7 +5,7 @@
 
 ARifle::ARifle()
 {
-	DashMaxSpeed = 1300;
+	DashMaxSpeed = 1200;
 	WalkSpeed = 650;
 	Delay = 6;
 	MaxBullet = 33;
@@ -21,6 +21,9 @@ ARifle::ARifle()
 		StaticMeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, *MeshPath));
 		StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+	BulletPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletPoint"));
+	BulletPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BulletPoint->SetRelativeLocation(FVector(-142, 27, 54));
 }
 
 void ARifle::Attack()

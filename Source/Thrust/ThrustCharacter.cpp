@@ -12,23 +12,46 @@ AThrustCharacter::AThrustCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("SkeletalMesh'/Game/Human/HumanTest2.HumanTest2'"));
+    if (SkeletalMeshAsset.Succeeded())
+    {
+        GetMesh()->SetSkeletalMesh(SkeletalMeshAsset.Object);
+    }
+
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClassFinder(TEXT("/Script/Engine.AnimBlueprint'/Game/Siru/BP/ABP_Character.ABP_Character_C'"));
+    if (AnimBPClassFinder.Succeeded())
+    {
+        GetMesh()->SetAnimInstanceClass(AnimBPClassFinder.Class);
+    }
+
+    GetMesh()->SetRelativeScale3D(FVector(3.745f, 3.745f, 3.745f));
+    GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+    GetMesh()->SetRelativeLocation(FVector(0, 0, -280));
+
     GetCapsuleComponent()->SetCapsuleSize(55, 135);
 
+    springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+    springArmComponent->SetupAttachment(RootComponent);
+    springArmComponent->SetRelativeLocation(FVector(0, 0, 0));
+    springArmComponent->TargetArmLength = 0;
+
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
-    CameraComponent->SetupAttachment(GetCapsuleComponent());
-    CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
+    CameraComponent->SetupAttachment(springArmComponent);
+    CameraComponent->SetRelativeLocation(FVector(39.4f, 0.0f, 110.0f));
 
     CameraComponent->bUsePawnControlRotation = true;
 
+
     MainWeapon = ARifle::StaticClass();    
-    CastMainWeapon();
 }
 
 // Called when the game starts or when spawned
 void AThrustCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-    
+    CastMainWeapon();
+
 }
 
 // Called every frame
@@ -41,7 +64,7 @@ void AThrustCharacter::Tick(float DeltaTime)
         {
             if (GetCharacterMovement()->MaxWalkSpeed < mw->DashMaxSpeed)
                 GetCharacterMovement()->MaxWalkSpeed += (mw->DashMaxSpeed - mw->WalkSpeed)/120;
-         }
+        }
         else
         {
             if (GetCharacterMovement()->MaxWalkSpeed > mw->WalkSpeed)
@@ -103,8 +126,21 @@ void AThrustCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void AThrustCharacter::MoveForward(float Value)
 {
-    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
-    AddMovementInput(Direction, Value);
+    if (Value != 0.0f) // 입력 값이 0이 아닐 때만 이동
+    {
+        // 카메라의 방향을 가져옴
+        FRotator ControlRotation = Controller->GetControlRotation();
+
+        // 카메라의 Yaw 값만 사용하여 방향을 결정
+        ControlRotation.Pitch = 0; // Pitch는 0으로 설정하여 수평으로만 이동
+        ControlRotation.Roll = 0; // Roll은 무시
+
+        // 방향 벡터 계산
+        FVector Direction = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::X);
+
+        // 이동 입력 적용
+        AddMovementInput(Direction, Value);
+    }
 }
 
 void AThrustCharacter::MoveRight(float Value)
@@ -157,6 +193,13 @@ void AThrustCharacter::UseSkill()
 void AThrustCharacter::CastMainWeapon()
 {
     mw = Cast<AWeaponBase>(MainWeapon->ClassDefaultObject);
+
+    AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
+
+ /*   SpawnActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
+    SpawnActor->SetActorRelativeScale3D(FVector(0.16f, 0.16f, 0.16f));
+    SpawnActor->SetActorRelativeLocation(FVector(0.12f, 2.2f, -5.2f));
+    SpawnActor->SetActorRelativeRotation(FRotator(0, 180, 0));*/
 }
 
 
