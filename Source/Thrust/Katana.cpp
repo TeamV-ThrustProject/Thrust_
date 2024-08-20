@@ -13,10 +13,8 @@ void AKatana::BeginPlay()
 
 	if (PlayerController)
 	{
-		// 플레이어가 조종하는 Pawn 가져오기
 		APawn* PlayerPawn = PlayerController->GetPawn();
 
-		// Pawn이 실제로 ACharacter인지 확인하고 캐스팅
 		ACharacter* PlayerCharacter = Cast<ACharacter>(PlayerPawn);
 
 		if (PlayerCharacter)
@@ -28,7 +26,7 @@ void AKatana::BeginPlay()
 
 AKatana::AKatana()
 {
-	DashMaxSpeed = 2600;
+	DashMaxSpeed = 1300;
 	WalkSpeed = 650;
 	Delay = 60;
 

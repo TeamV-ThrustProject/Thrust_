@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AWeaponBase*> WeaponArray;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int WeaponNum;
+
 	AWeaponBase* mw;
 
 	UPROPERTY()

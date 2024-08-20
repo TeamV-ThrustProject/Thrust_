@@ -65,11 +65,15 @@ void AThrustCharacter::BeginPlay()
 
             if (SpawnedWeapon)
             {
-                // 스폰된 무기를 배열에 추가
                 WeaponArray.Add(SpawnedWeapon);
+                SpawnedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
+                SpawnedWeapon->SetActorRelativeScale3D(FVector(0.16f, 0.16f, 0.16f));
+                SpawnedWeapon->SetActorRelativeLocation(FVector(0.12f, 2.2f, -5.2f));
+                SpawnedWeapon->SetActorRelativeRotation(FRotator(0, 180, 0));
 
-                // 예시로 무기를 바로 공격하게 함
-                SpawnedWeapon->Attack();
+                SpawnedWeapon->SetActorHiddenInGame(true);
+                SpawnedWeapon->SetActorEnableCollision(false);
+                SpawnedWeapon->SetActorTickEnabled(false);
             }
         }
     }
@@ -151,17 +155,13 @@ void AThrustCharacter::MoveForward(float Value)
 {
     if (Value != 0.0f) // 입력 값이 0이 아닐 때만 이동
     {
-        // 카메라의 방향을 가져옴
         FRotator ControlRotation = Controller->GetControlRotation();
 
-        // 카메라의 Yaw 값만 사용하여 방향을 결정
         ControlRotation.Pitch = 0; // Pitch는 0으로 설정하여 수평으로만 이동
         ControlRotation.Roll = 0; // Roll은 무시
 
-        // 방향 벡터 계산
         FVector Direction = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::X);
 
-        // 이동 입력 적용
         AddMovementInput(Direction, Value);
     }
 }
@@ -198,6 +198,7 @@ void AThrustCharacter::Dash()
     {
         Dash *= 4000;
     }
+
     if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
     {
         Dash += FVector(0, 0, 200);
@@ -230,7 +231,7 @@ void AThrustCharacter::CastMainWeapon()
 {
     mw = Cast<AWeaponBase>(MainWeapon->ClassDefaultObject);
 
-    AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
+   // AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
 
  /*   SpawnActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
     SpawnActor->SetActorRelativeScale3D(FVector(0.16f, 0.16f, 0.16f));
