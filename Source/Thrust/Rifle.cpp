@@ -11,11 +11,11 @@ ARifle::ARifle()
 	MaxBullet = 33;
 	Bullet = 33;
 
-	WeaponRoot->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Siru/Gun/GunBody.GunBody")));
+	WeaponRoot->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapon/Gun/GunBody.GunBody")));
 	for(int i=1;i<11;i++)
 	{
 		FString MeshName = FString::Printf(TEXT("Body%d"), i);
-		FString MeshPath = FString::Printf(TEXT("/Game/Siru/Gun/Gun%d.Gun%d"), i, i);
+		FString MeshPath = FString::Printf(TEXT("/Game/Weapon/Gun/Gun%d.Gun%d"), i, i);
 		UStaticMeshComponent* StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(*MeshName);
 		StaticMeshComponent->SetupAttachment(WeaponRoot);
 		StaticMeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, *MeshPath));

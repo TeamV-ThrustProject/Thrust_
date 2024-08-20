@@ -39,6 +39,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AWeaponBase>MainWeapon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<class AWeaponBase>> WeaponClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AWeaponBase*> WeaponArray;
+
 	AWeaponBase* mw;
 
 	UPROPERTY()
@@ -60,10 +66,10 @@ public:
 	void StopJump();
 
 	UFUNCTION()
-	void StartDash();
+	void Run();
 
 	UFUNCTION()
-	void StopDash();
+	void Dash();
 
 	UFUNCTION()
 	void StartAttack();
@@ -85,6 +91,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* springArmComponent;
+
+	UPROPERTY(EditAnywhere)
+	UCharacterMovementComponent* MovementComponent;
 
 	UPROPERTY(EditAnywhere)
 	ARifle* Rifle;
