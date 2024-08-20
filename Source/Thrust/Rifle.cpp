@@ -5,22 +5,25 @@
 
 ARifle::ARifle()
 {
-	DashMaxSpeed = 1300;
+	DashMaxSpeed = 1200;
 	WalkSpeed = 650;
 	Delay = 6;
 	MaxBullet = 33;
 	Bullet = 33;
 
-	WeaponRoot->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Siru/Gun/GunBody.GunBody")));
+	WeaponRoot->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapon/Gun/GunBody.GunBody")));
 	for(int i=1;i<11;i++)
 	{
 		FString MeshName = FString::Printf(TEXT("Body%d"), i);
-		FString MeshPath = FString::Printf(TEXT("/Game/Siru/Gun/Gun%d.Gun%d"), i, i);
+		FString MeshPath = FString::Printf(TEXT("/Game/Weapon/Gun/Gun%d.Gun%d"), i, i);
 		UStaticMeshComponent* StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(*MeshName);
 		StaticMeshComponent->SetupAttachment(WeaponRoot);
 		StaticMeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, *MeshPath));
 		StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+	BulletPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletPoint"));
+	BulletPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BulletPoint->SetRelativeLocation(FVector(-142, 27, 54));
 }
 
 void ARifle::Attack()

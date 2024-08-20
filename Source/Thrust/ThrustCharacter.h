@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Rifle.h"
 #include "Katana.h"
 #include "ThrustCharacter.generated.h"
@@ -38,6 +39,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AWeaponBase>MainWeapon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<class AWeaponBase>> WeaponClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AWeaponBase*> WeaponArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int WeaponNum;
+
 	AWeaponBase* mw;
 
 	UPROPERTY()
@@ -59,10 +69,10 @@ public:
 	void StopJump();
 
 	UFUNCTION()
-	void StartDash();
+	void Run();
 
 	UFUNCTION()
-	void StopDash();
+	void Dash();
 
 	UFUNCTION()
 	void StartAttack();
@@ -78,9 +88,15 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMeshComponent;
-
+	
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere)
+	class USpringArmComponent* springArmComponent;
+
+	UPROPERTY(EditAnywhere)
+	UCharacterMovementComponent* MovementComponent;
 
 	UPROPERTY(EditAnywhere)
 	ARifle* Rifle;

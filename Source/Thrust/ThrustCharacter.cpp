@@ -12,23 +12,71 @@ AThrustCharacter::AThrustCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+    
+    MovementComponent = GetCharacterMovement();
+
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("SkeletalMesh'/Game/Human/HumanTest2.HumanTest2'"));
+    if (SkeletalMeshAsset.Succeeded())
+    {
+        GetMesh()->SetSkeletalMesh(SkeletalMeshAsset.Object);
+    }
+
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClassFinder(TEXT("/Script/Engine.AnimBlueprint'/Game/Siru/BP/ABP_Character.ABP_Character_C'"));
+    if (AnimBPClassFinder.Succeeded())
+    {
+        GetMesh()->SetAnimInstanceClass(AnimBPClassFinder.Class);
+    }
+
+    GetMesh()->SetRelativeScale3D(FVector(3.745f, 3.745f, 3.745f));
+    GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+    GetMesh()->SetRelativeLocation(FVector(0, 0, -280));
+
     GetCapsuleComponent()->SetCapsuleSize(55, 135);
 
+    springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+    springArmComponent->SetupAttachment(RootComponent);
+    springArmComponent->SetRelativeLocation(FVector(0, 0, 0));
+    springArmComponent->TargetArmLength = 0;
+
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
-    CameraComponent->SetupAttachment(GetCapsuleComponent());
-    CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
+    CameraComponent->SetupAttachment(springArmComponent);
+    CameraComponent->SetRelativeLocation(FVector(39.4f, 0.0f, 110.0f));
 
     CameraComponent->bUsePawnControlRotation = true;
 
-    MainWeapon = ARifle::StaticClass();    
-    CastMainWeapon();
+    MainWeapon = AKatana::StaticClass();    
+    WeaponClasses.Add(AKatana::StaticClass());
+    WeaponClasses.Add(ARifle::StaticClass());
+
+    
 }
 
 // Called when the game starts or when spawned
 void AThrustCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-    
+    CastMainWeapon();
+    for (TSubclassOf<AWeaponBase> WeaponClass : WeaponClasses)
+    {
+        if (WeaponClass)
+        {
+            // WeaponClass에 해당하는 무기 인스턴스를 스폰
+            AWeaponBase* SpawnedWeapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+
+            if (SpawnedWeapon)
+            {
+                WeaponArray.Add(SpawnedWeapon);
+                SpawnedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
+                SpawnedWeapon->SetActorRelativeScale3D(FVector(0.16f, 0.16f, 0.16f));
+                SpawnedWeapon->SetActorRelativeLocation(FVector(0.12f, 2.2f, -5.2f));
+                SpawnedWeapon->SetActorRelativeRotation(FRotator(0, 180, 0));
+
+                SpawnedWeapon->SetActorHiddenInGame(true);
+                SpawnedWeapon->SetActorEnableCollision(false);
+                SpawnedWeapon->SetActorTickEnabled(false);
+            }
+        }
+    }
 }
 
 // Called every frame
@@ -41,7 +89,7 @@ void AThrustCharacter::Tick(float DeltaTime)
         {
             if (GetCharacterMovement()->MaxWalkSpeed < mw->DashMaxSpeed)
                 GetCharacterMovement()->MaxWalkSpeed += (mw->DashMaxSpeed - mw->WalkSpeed)/120;
-         }
+        }
         else
         {
             if (GetCharacterMovement()->MaxWalkSpeed > mw->WalkSpeed)
@@ -92,19 +140,30 @@ void AThrustCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
         PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AThrustCharacter::StartJump);
         PlayerInputComponent->BindAction("Jump", IE_Released, this, &AThrustCharacter::StopJump);
 
-        PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &AThrustCharacter::StartDash);
-        PlayerInputComponent->BindAction("Dash", IE_Released, this, &AThrustCharacter::StopDash);
+        PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AThrustCharacter::Run);
 
         PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AThrustCharacter::StartAttack);
         PlayerInputComponent->BindAction("Attack", IE_Released, this, &AThrustCharacter::StopAttack);
 
         PlayerInputComponent->BindAction("Skill", IE_Pressed, this, &AThrustCharacter::UseSkill);
+
+        PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &AThrustCharacter::Dash);
+
 }
 
 void AThrustCharacter::MoveForward(float Value)
 {
-    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
-    AddMovementInput(Direction, Value);
+    if (Value != 0.0f) // 입력 값이 0이 아닐 때만 이동
+    {
+        FRotator ControlRotation = Controller->GetControlRotation();
+
+        ControlRotation.Pitch = 0; // Pitch는 0으로 설정하여 수평으로만 이동
+        ControlRotation.Roll = 0; // Roll은 무시
+
+        FVector Direction = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::X);
+
+        AddMovementInput(Direction, Value);
+    }
 }
 
 void AThrustCharacter::MoveRight(float Value)
@@ -123,14 +182,28 @@ void AThrustCharacter::StopJump()
     bPressedJump = false;
 }
 
-void AThrustCharacter::StartDash()
+void AThrustCharacter::Run()
 {
-    bDash = true;
+    bDash = !bDash;
 }
 
-void AThrustCharacter::StopDash()
+void AThrustCharacter::Dash()
 {
-    bDash = false;
+    FVector Dash = this->GetCharacterMovement()->GetLastInputVector();
+    if (MovementComponent->IsFalling())
+    {
+        Dash *= 2000;
+    }
+    else
+    {
+        Dash *= 4000;
+    }
+
+    if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
+    {
+        Dash += FVector(0, 0, 200);
+        LaunchCharacter(Dash, true, true);
+    }
 }
 
 void AThrustCharacter::StartAttack()
@@ -157,6 +230,13 @@ void AThrustCharacter::UseSkill()
 void AThrustCharacter::CastMainWeapon()
 {
     mw = Cast<AWeaponBase>(MainWeapon->ClassDefaultObject);
+
+   // AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
+
+ /*   SpawnActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
+    SpawnActor->SetActorRelativeScale3D(FVector(0.16f, 0.16f, 0.16f));
+    SpawnActor->SetActorRelativeLocation(FVector(0.12f, 2.2f, -5.2f));
+    SpawnActor->SetActorRelativeRotation(FRotator(0, 180, 0));*/
 }
 
 
