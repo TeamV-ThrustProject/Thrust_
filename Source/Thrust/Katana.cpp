@@ -6,17 +6,36 @@
 #include "GameFramework/PlayerController.h"
 
 
+void AKatana::BeginPlay()
+{
+	Super::BeginPlay();
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerController)
+	{
+		APawn* PlayerPawn = PlayerController->GetPawn();
+
+		ACharacter* PlayerCharacter = Cast<ACharacter>(PlayerPawn);
+
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->JumpMaxCount = 2;
+		}
+	}
+}
+
 AKatana::AKatana()
 {
-	DashMaxSpeed = 2600;
+	DashMaxSpeed = 1300;
 	WalkSpeed = 650;
-	Delay = 60; 
+	Delay = 60;
+
 	PrimaryActorTick.bCanEverTick = true;
 
-	WeaponRoot->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Shuby/BT_AI/MeleeEnemy/Weapon/KatanaHand.KatanaHand")));
-	UStaticMeshComponent * StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponBody"));
+	WeaponRoot->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapon/MeleeWeapon/KatanaHand.KatanaHand")));
+	UStaticMeshComponent* StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponBody"));
 	StaticMeshComponent->SetupAttachment(WeaponRoot);
-	StaticMeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Shuby/BT_AI/MeleeEnemy/Weapon/KatanaBody.KatanaBody")));
+	StaticMeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapon/MeleeWeapon/KatanaBody.KatanaBody")));
 	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	SetActorScale3D(FVector(0.5, 0.5, 0.5));

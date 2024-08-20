@@ -19,6 +19,8 @@ public:
 	int ReloadTime=60;
 	bool bReload;
 
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* BulletPoint;
 	void Tick(float DeltaTime)override;
 	virtual void Attack()override;
 };
