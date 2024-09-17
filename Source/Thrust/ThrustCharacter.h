@@ -46,7 +46,7 @@ public:
 	TArray<AWeaponBase*> WeaponArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int WeaponNum;
+	int WeaponNum = 0;
 
 	AWeaponBase* mw;
 
@@ -85,6 +85,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CastMainWeapon();
+
+	UFUNCTION()
+	void SwapWeapon();
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMeshComponent;

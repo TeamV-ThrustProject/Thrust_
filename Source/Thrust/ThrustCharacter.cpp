@@ -77,6 +77,7 @@ void AThrustCharacter::BeginPlay()
             }
         }
     }
+    SwapWeapon();
 }
 
 // Called every frame
@@ -225,11 +226,12 @@ void AThrustCharacter::UseSkill()
             this->SetActorLocation(h);
         }
     }
+    SwapWeapon();
 }
 
 void AThrustCharacter::CastMainWeapon()
 {
-    mw = Cast<AWeaponBase>(MainWeapon->ClassDefaultObject);
+    mw = Cast<AWeaponBase>(WeaponClasses[WeaponNum]->ClassDefaultObject);
 
    // AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
 
@@ -238,5 +240,35 @@ void AThrustCharacter::CastMainWeapon()
     SpawnActor->SetActorRelativeLocation(FVector(0.12f, 2.2f, -5.2f));
     SpawnActor->SetActorRelativeRotation(FRotator(0, 180, 0));*/
 }
+
+void AThrustCharacter::SwapWeapon()
+{
+    if (WeaponArray[WeaponNum] != nullptr)
+    {
+        WeaponArray[WeaponNum]->SetActorHiddenInGame(true);
+        WeaponArray[WeaponNum]->SetActorEnableCollision(false);
+        WeaponArray[WeaponNum]->SetActorTickEnabled(false);
+    }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("weapon nullptr"));
+   
+
+    if (WeaponNum % 2 == 0)
+        WeaponNum++;
+    else
+        WeaponNum--;
+    CastMainWeapon();
+
+    if (WeaponArray[WeaponNum] != nullptr)
+    {
+        WeaponArray[WeaponNum]->SetActorHiddenInGame(false);
+        WeaponArray[WeaponNum]->SetActorEnableCollision(true);
+        WeaponArray[WeaponNum]->SetActorTickEnabled(true);
+    }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("weapon nullptr"));
+}
+
+
 
 

@@ -2,6 +2,7 @@
 
 
 #include "Rifle.h"
+#include "Bullet.h"
 
 ARifle::ARifle()
 {
@@ -24,6 +25,7 @@ ARifle::ARifle()
 	BulletPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletPoint"));
 	BulletPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BulletPoint->SetRelativeLocation(FVector(-142, 27, 54));
+
 }
 
 void ARifle::Attack()
@@ -32,6 +34,13 @@ void ARifle::Attack()
 		return;
 
 	UE_LOG(LogTemp, Warning, TEXT("rifle attack"));
+
+	FVector SpawnLocation = FVector(8824.f, -400.f, 870.f);
+	FRotator SpawnRotation = FRotator(0, 0, 180);
+
+
+	//GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), SpawnLocation, SpawnRotation);
+
 	Bullet--;
 	bCanAttack = false;
 

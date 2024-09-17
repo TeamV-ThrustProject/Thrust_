@@ -20,7 +20,13 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+
+	UStaticMeshComponent* CubeMesh;
+
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere)
+	int Speed = 1;
 
 };

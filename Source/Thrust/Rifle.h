@@ -21,6 +21,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* BulletPoint;
+
+	TSubclassOf<AActor> BPBullet;
 	void Tick(float DeltaTime)override;
 	virtual void Attack()override;
 };
