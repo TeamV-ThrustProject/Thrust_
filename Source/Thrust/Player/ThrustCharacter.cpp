@@ -36,13 +36,17 @@ AThrustCharacter::AThrustCharacter()
     springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
     springArmComponent->SetupAttachment(RootComponent);
     springArmComponent->SetRelativeLocation(FVector(0, 0, 0));
-    springArmComponent->TargetArmLength = 0;
-
+    springArmComponent->TargetArmLength = 150.0f;
+    springArmComponent->bUsePawnControlRotation = true;
+    springArmComponent->bDoCollisionTest = true;
+    springArmComponent->ProbeSize = 12.0f; // 충돌을 감지하는 구의 크기
+    springArmComponent->ProbeChannel = ECC_Camera; // 카메라 충돌 채널 설정
+    springArmComponent->bEnableCameraLag = true;
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
     CameraComponent->SetupAttachment(springArmComponent);
     CameraComponent->SetRelativeLocation(FVector(39.4f, 0.0f, 110.0f));
 
-    CameraComponent->bUsePawnControlRotation = true;
+    CameraComponent->bUsePawnControlRotation = false;
 
     //MainWeapon = AKatana::StaticClass();    
     WeaponClasses.Add(ARifle::StaticClass());
@@ -54,7 +58,6 @@ AThrustCharacter::AThrustCharacter()
 void AThrustCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-    CastMainWeapon();
     for (TSubclassOf<AWeaponBase> WeaponClass : WeaponClasses)
     {
         if (WeaponClass)
@@ -77,6 +80,8 @@ void AThrustCharacter::BeginPlay()
         }
     }
     SwapWeapon();
+    CastMainWeapon();
+
 }
 
 // Called every frame
@@ -230,7 +235,7 @@ void AThrustCharacter::UseSkill()
 
 void AThrustCharacter::CastMainWeapon()
 {
-    mw = Cast<AWeaponBase>(WeaponClasses[WeaponNum]->ClassDefaultObject);
+    mw = Cast<AWeaponBase>(WeaponArray[WeaponNum]);
    // AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
 
  /*   SpawnActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
