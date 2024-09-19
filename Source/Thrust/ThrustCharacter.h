@@ -7,9 +7,9 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "../Weapon/Rifle.h"
-#include "../Weapon/Katana.h"
-#include "../Anim/ABP_Base.h"
+#include "Rifle.h"
+#include "Katana.h"
+#include "ABP_Base.h"
 #include "ThrustCharacter.generated.h"
 
 

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "Bullet.h"
 #include "Rifle.generated.h"
 
 /**
