@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Rifle.h"
 #include "Katana.h"
+#include "ABP_Base.h"
 #include "ThrustCharacter.generated.h"
 
 
@@ -47,6 +48,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int WeaponNum = 0;
+
+	UPROPERTY()
+	UABP_Base *AnimInstance;
 
 	AWeaponBase* mw;
 

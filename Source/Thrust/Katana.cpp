@@ -54,7 +54,7 @@ bool AKatana::Skill(FVector Hit)
 
 	//	if (PlayerCharacter)
 	//	{
-	//		// »õ·Î¿î À§Ä¡·Î ÀÌµ¿
+	//		// ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ìµï¿½
 	//		PlayerCharacter->SetActorLocation(Hit);
 	//	}
 	//}

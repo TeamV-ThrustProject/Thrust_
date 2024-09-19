@@ -21,7 +21,7 @@ AThrustCharacter::AThrustCharacter()
         GetMesh()->SetSkeletalMesh(SkeletalMeshAsset.Object);
     }
 
-    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClassFinder(TEXT("/Script/Engine.AnimBlueprint'/Game/Siru/BP/ABP_Character.ABP_Character_C'"));
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClassFinder(TEXT("/Script/Engine.AnimBlueprint'/Game/Siru/BP/Anim/ABP_Character.ABP_Character_C'"));
     if (AnimBPClassFinder.Succeeded())
     {
         GetMesh()->SetAnimInstanceClass(AnimBPClassFinder.Class);
@@ -44,11 +44,10 @@ AThrustCharacter::AThrustCharacter()
 
     CameraComponent->bUsePawnControlRotation = true;
 
-    MainWeapon = AKatana::StaticClass();    
-    WeaponClasses.Add(AKatana::StaticClass());
+    //MainWeapon = AKatana::StaticClass();    
     WeaponClasses.Add(ARifle::StaticClass());
+    WeaponClasses.Add(AKatana::StaticClass());
 
-    
 }
 
 // Called when the game starts or when spawned
@@ -60,7 +59,7 @@ void AThrustCharacter::BeginPlay()
     {
         if (WeaponClass)
         {
-            // WeaponClass¿¡ ÇØ´çÇÏ´Â ¹«±â ÀÎ½ºÅÏ½º¸¦ ½ºÆù
+            // WeaponClassï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             AWeaponBase* SpawnedWeapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
 
             if (SpawnedWeapon)
@@ -154,12 +153,12 @@ void AThrustCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void AThrustCharacter::MoveForward(float Value)
 {
-    if (Value != 0.0f) // ÀÔ·Â °ªÀÌ 0ÀÌ ¾Æ´Ò ¶§¸¸ ÀÌµ¿
+    if (Value != 0.0f) // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
     {
         FRotator ControlRotation = Controller->GetControlRotation();
 
-        ControlRotation.Pitch = 0; // Pitch´Â 0À¸·Î ¼³Á¤ÇÏ¿© ¼öÆòÀ¸·Î¸¸ ÀÌµ¿
-        ControlRotation.Roll = 0; // RollÀº ¹«½Ã
+        ControlRotation.Pitch = 0; // Pitchï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½Ìµï¿½
+        ControlRotation.Roll = 0; // Rollï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         FVector Direction = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::X);
 
@@ -223,7 +222,7 @@ void AThrustCharacter::UseSkill()
     {
         if (mw->Skill(h))
         {
-            this->SetActorLocation(h);
+            //this->SetActorLocation(h);
         }
     }
     SwapWeapon();
@@ -232,7 +231,6 @@ void AThrustCharacter::UseSkill()
 void AThrustCharacter::CastMainWeapon()
 {
     mw = Cast<AWeaponBase>(WeaponClasses[WeaponNum]->ClassDefaultObject);
-
    // AWeaponBase* SpawnActor = GetWorld()->SpawnActor<AWeaponBase>(MainWeapon, GetActorTransform());
 
  /*   SpawnActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
@@ -267,6 +265,14 @@ void AThrustCharacter::SwapWeapon()
     }
     else
         UE_LOG(LogTemp, Warning, TEXT("weapon nullptr"));
+
+
+    Cast<UABP_Base>(GetMesh()->GetAnimInstance())->WeaponNum = WeaponNum;
+    UE_LOG(LogTemp, Warning, TEXT("weapon num %d"),WeaponNum);
+
+  
+   
+
 }
 
 

@@ -3,6 +3,7 @@
 
 #include "Rifle.h"
 #include "Bullet.h"
+#include "Katana.h"
 
 ARifle::ARifle()
 {
@@ -39,8 +40,8 @@ void ARifle::Attack()
 	FRotator SpawnRotation = FRotator(0, 0, 180);
 
 
-	//GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), SpawnLocation, SpawnRotation);
-
+	//GetWorld()->SpawnActor<ARifle>(ARifle::StaticClass(), SpawnLocation, SpawnRotation);
+	GetWorld()->SpawnActor<AWeaponBase>(AKatana::StaticClass());
 	Bullet--;
 	bCanAttack = false;
 
