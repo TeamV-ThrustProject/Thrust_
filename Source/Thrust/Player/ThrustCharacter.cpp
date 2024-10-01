@@ -21,7 +21,7 @@ AThrustCharacter::AThrustCharacter()
         GetMesh()->SetSkeletalMesh(SkeletalMeshAsset.Object);
     }
 
-    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClassFinder(TEXT("/Script/Engine.AnimBlueprint'/Game/Siru/BP/Anim/ABP_Character.ABP_Character_C'"));
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClassFinder(TEXT("/Script/Engine.AnimBlueprint'/Game/Siru/BP/Anim/ABP_CharacterTest.ABP_CharacterTest_C'"));
     if (AnimBPClassFinder.Succeeded())
     {
         GetMesh()->SetAnimInstanceClass(AnimBPClassFinder.Class);
@@ -71,7 +71,7 @@ void AThrustCharacter::BeginPlay()
                 SpawnedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "Weapon");
                 SpawnedWeapon->SetActorRelativeScale3D(FVector(0.16f, 0.16f, 0.16f));
                 SpawnedWeapon->SetActorRelativeLocation(FVector(0.12f, 2.2f, -5.2f));
-                SpawnedWeapon->SetActorRelativeRotation(FRotator(0, 180, 0));
+                SpawnedWeapon->SetActorRelativeRotation(FRotator(-22.3, 214.7, 12.9));
 
                 SpawnedWeapon->SetActorHiddenInGame(true);
                 SpawnedWeapon->SetActorEnableCollision(false);
@@ -272,7 +272,7 @@ void AThrustCharacter::SwapWeapon()
         UE_LOG(LogTemp, Warning, TEXT("weapon nullptr"));
 
 
-    //Cast<UABP_Base>(GetMesh()->GetAnimInstance())->WeaponNum = WeaponNum;
+    Cast<UABP_Base>(GetMesh()->GetAnimInstance())->WeaponNum = WeaponNum;
     UE_LOG(LogTemp, Warning, TEXT("weapon num %d"),WeaponNum);
 
   
