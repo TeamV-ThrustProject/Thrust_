@@ -7,7 +7,7 @@ ARifle::ARifle()
 {
 	DashMaxSpeed = 1200;
 	WalkSpeed = 650;
-	Delay = 6;
+	Delay = 30;
 	MaxBullet = 33;
 	Bullet = 33;
 
@@ -21,10 +21,15 @@ ARifle::ARifle()
 		StaticMeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, *MeshPath));
 		StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-	BulletPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletPoint"));
-	BulletPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	BulletPoint->SetRelativeLocation(FVector(-142, 27, 54));
+}
 
+void ARifle::BeginPlay()
+{
+	Super::BeginPlay();
+	BulletSpawnLocation = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass());
+	BulletSpawnLocation->Speed = 0;
+	BulletSpawnLocation->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	BulletSpawnLocation->SetActorRelativeLocation(FVector(-140, 27, 55));
 }
 
 void ARifle::Attack()
@@ -34,11 +39,9 @@ void ARifle::Attack()
 
 	UE_LOG(LogTemp, Warning, TEXT("rifle attack"));
 
-	FVector SpawnLocation = FVector(8824.f, -400.f, 870.f);
-	FRotator SpawnRotation = FRotator(0, 0, 180);
-
-	GetWorld()->SpawnActor<AActor>(ABullet::StaticClass(), SpawnLocation, SpawnRotation);
-
+	AActor *bullet = GetWorld()->SpawnActor<AActor>(ABullet::StaticClass());
+	bullet->SetActorLocation(BulletSpawnLocation->GetActorLocation());
+	bullet->SetActorRotation(BulletSpawnLocation->GetActorRotation());
 	Bullet--;
 	bCanAttack = false;
 

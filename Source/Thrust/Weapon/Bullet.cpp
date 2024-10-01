@@ -12,15 +12,13 @@ ABullet::ABullet()
     CubeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CubeMesh"));
     RootComponent = CubeMesh;
 
-    // 기본 큐브 메시 로드
     static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMeshAsset(TEXT("/Engine/BasicShapes/Cube.Cube"));
     if (CubeMeshAsset.Succeeded())
     {
         CubeMesh->SetStaticMesh(CubeMeshAsset.Object);
     }
 
-    // 큐브 크기나 물리 설정 (원하는 설정으로)
-    CubeMesh->SetWorldScale3D(FVector(0.1f));
+    CubeMesh->SetWorldScale3D(FVector(0.02f));
 
 }
 
@@ -36,6 +34,6 @@ void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	SetActorLocation(GetActorLocation() + (FVector(1, 0, 0) * Speed));
+    SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed * -1);
 }
 

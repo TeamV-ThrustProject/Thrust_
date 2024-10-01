@@ -17,7 +17,9 @@ class THRUST_API ARifle : public AWeaponBase
 
 public:
 	ARifle();
-	int ReloadTime=60;
+	virtual void BeginPlay();
+	ABullet* BulletSpawnLocation;
+	int ReloadTime = 300;
 	bool bReload;
 
 	UPROPERTY(EditAnywhere)
