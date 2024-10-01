@@ -272,7 +272,7 @@ void AThrustCharacter::SwapWeapon()
         UE_LOG(LogTemp, Warning, TEXT("weapon nullptr"));
 
 
-    Cast<UABP_Base>(GetMesh()->GetAnimInstance())->WeaponNum = WeaponNum;
+    //Cast<UABP_Base>(GetMesh()->GetAnimInstance())->WeaponNum = WeaponNum;
     UE_LOG(LogTemp, Warning, TEXT("weapon num %d"),WeaponNum);
 
   
