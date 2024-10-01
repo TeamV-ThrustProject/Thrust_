@@ -33,11 +33,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InComingDamage = 50.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FTransform LastSavedTransform;
-
 	UPROPERTY()
 	float GravityScale = 3.0f;
 	UPROPERTY()
