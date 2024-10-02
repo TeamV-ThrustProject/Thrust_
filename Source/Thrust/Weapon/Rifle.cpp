@@ -30,6 +30,10 @@ void ARifle::BeginPlay()
 	BulletSpawnLocation->Speed = 0;
 	BulletSpawnLocation->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	BulletSpawnLocation->SetActorRelativeLocation(FVector(-140, 27, 55));
+	BulletSpawnLocation->SetActorHiddenInGame(true);
+	BulletSpawnLocation->SetActorEnableCollision(false);
+	BulletSpawnLocation->SetActorTickEnabled(false);
+
 }
 
 void ARifle::Attack()
