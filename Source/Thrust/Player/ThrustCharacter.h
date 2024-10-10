@@ -57,6 +57,10 @@ public:
 	UPROPERTY()
 	UABP_Base *AnimInstance;
 
+	UPROPERTY()
+	APlayerController* PlayerController;
+
+	UPROPERTY()
 	AWeaponBase* mw;
 
 	UPROPERTY()
@@ -84,7 +88,10 @@ public:
 	void StopJump();
 
 	UFUNCTION()
-	void Run();
+	void StartSlide();
+
+	UFUNCTION()
+	void EndSlide();
 
 	UFUNCTION()
 	void Dash();
@@ -124,6 +131,9 @@ public:
 
 	UPROPERTY()
 	bool bAttack;
+
+	UPROPERTY()
+	UABP_Base *AnimBP;
 
 	FVector h;
 };

@@ -17,4 +17,8 @@ class THRUST_API UABP_Base : public UAnimInstance
 public:
 	UPROPERTY(BlueprintReadWrite)
 	int WeaponNum = -1;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isSlide = false;
+
 };

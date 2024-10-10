@@ -87,24 +87,25 @@ void AThrustCharacter::BeginPlay()
 // Called every frame
 void AThrustCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
     mw->Tick(DeltaTime);
-    if(mw != nullptr)
-        if (GetCharacterMovement()->MaxWalkSpeed < mw->DashMaxSpeed)
-            GetCharacterMovement()->MaxWalkSpeed += (mw->DashMaxSpeed - mw->WalkSpeed)/120;
-    else 
-        UE_LOG(LogTemp, Warning, TEXT("cast error"));
-
-    if(bAttack)
     if (mw != nullptr)
     {
-        if (mw->bCanAttack)
-        {
-            mw->Attack(h);
-        }
+        if (GetCharacterMovement()->MaxWalkSpeed < mw->DashMaxSpeed)
+            GetCharacterMovement()->MaxWalkSpeed += (mw->DashMaxSpeed - mw->WalkSpeed) / 120;
     }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("MainWeapon is Null"));
 
-    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if (bAttack&&!isSlide)
+        if (mw != nullptr)
+        {
+            if (mw->bCanAttack)
+            {
+                mw->Attack(h);
+            }
+        }
+
     if (PlayerController)
     {
         FVector CameraLocation;
@@ -117,6 +118,8 @@ void AThrustCharacter::Tick(float DeltaTime)
             h = HitResult.ImpactPoint;
         }
     }
+    else
+        PlayerController = Cast<APlayerController>(GetController());
 
     if (!isDash)
     {
@@ -125,6 +128,11 @@ void AThrustCharacter::Tick(float DeltaTime)
             isDash = true;
     }
 
+    if (isSlide)
+        if (GetCharacterMovement()->Velocity.IsZero())
+        {
+            EndSlide();
+        }
 }
 
 // Called to bind functionality to input
@@ -144,7 +152,8 @@ void AThrustCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
         PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AThrustCharacter::StartJump);
         PlayerInputComponent->BindAction("Jump", IE_Released, this, &AThrustCharacter::StopJump);
 
-        PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AThrustCharacter::Run);
+        PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AThrustCharacter::StartSlide);
+        PlayerInputComponent->BindAction("Run", IE_Released, this, &AThrustCharacter::EndSlide);
 
         PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AThrustCharacter::StartAttack);
         PlayerInputComponent->BindAction("Attack", IE_Released, this, &AThrustCharacter::StopAttack);
@@ -157,28 +166,36 @@ void AThrustCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void AThrustCharacter::MoveForward(float Value)
 {
-    if (Value != 0.0f) // �Է� ���� 0�� �ƴ� ���� �̵�
-    {
-        FRotator ControlRotation = Controller->GetControlRotation();
+    if (!isSlide)
+        if (Value != 0.0f) // �Է� ���� 0�� �ƴ� ���� �̵�
+        {
+            FRotator ControlRotation = Controller->GetControlRotation();
 
-        ControlRotation.Pitch = 0; // Pitch�� 0���� �����Ͽ� �������θ� �̵�
-        ControlRotation.Roll = 0; // Roll�� ����
+            ControlRotation.Pitch = 0; // Pitch�� 0���� �����Ͽ� �������θ� �̵�
+            ControlRotation.Roll = 0; // Roll�� ����
 
-        FVector Direction = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::X);
+            FVector Direction = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::X);
 
-        AddMovementInput(Direction, Value);
-    }
+            AddMovementInput(Direction, Value);
+        }
 }
 
 void AThrustCharacter::MoveRight(float Value)
 {
-    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
-    AddMovementInput(Direction, Value);
+    if (!isSlide)
+    {
+        FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
+        AddMovementInput(Direction, Value);
+    }
 }
 
 void AThrustCharacter::StartJump()
 {
     bPressedJump = true;
+    if (isSlide) 
+    {
+        EndSlide();
+    }
 }
 
 void AThrustCharacter::StopJump()
@@ -186,9 +203,18 @@ void AThrustCharacter::StopJump()
     bPressedJump = false;
 }
 
-void AThrustCharacter::Run()
+void AThrustCharacter::StartSlide()
 {
-    bDash = !bDash;
+    this->isSlide = true;
+    AnimBP->isSlide = true;
+    MovementComponent->BrakingFrictionFactor = 0.15f;
+}
+
+void AThrustCharacter::EndSlide()
+{
+    this->isSlide = false;
+    AnimBP->isSlide = false;
+    MovementComponent->BrakingFrictionFactor = 8;
 }
 
 void AThrustCharacter::Dash()
@@ -273,7 +299,11 @@ void AThrustCharacter::SwapWeapon()
         UE_LOG(LogTemp, Warning, TEXT("weapon nullptr"));
 
 
-    Cast<UABP_Base>(GetMesh()->GetAnimInstance())->WeaponNum = WeaponNum;
+    if(AnimBP !=nullptr)
+        AnimBP->WeaponNum = WeaponNum;
+    else
+        AnimBP = Cast<UABP_Base>(GetMesh()->GetAnimInstance());
+
     UE_LOG(LogTemp, Warning, TEXT("weapon num %d"),WeaponNum);
 
   
