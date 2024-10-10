@@ -27,5 +27,5 @@ public:
 
 	TSubclassOf<AActor> BPBullet;
 	void Tick(float DeltaTime)override;
-	virtual void Attack()override;
+	virtual void Attack(FVector hit)override;
 };

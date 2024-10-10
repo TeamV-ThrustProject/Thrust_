@@ -8,18 +8,9 @@ ABullet::ABullet()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-    CubeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CubeMesh"));
-    RootComponent = CubeMesh;
-
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMeshAsset(TEXT("/Engine/BasicShapes/Cube.Cube"));
-    if (CubeMeshAsset.Succeeded())
-    {
-        CubeMesh->SetStaticMesh(CubeMeshAsset.Object);
-    }
-
-    CubeMesh->SetWorldScale3D(FVector(0.02f));
-
+	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
+    Body->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Weapon/Gun/Gun8.Gun8")));
+    RootComponent = Body;
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +25,6 @@ void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-    SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed * -1);
+    SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed );
 }
 

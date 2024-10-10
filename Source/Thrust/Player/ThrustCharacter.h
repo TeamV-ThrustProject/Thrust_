@@ -63,7 +63,13 @@ public:
 	bool bKatana;
 
 	UPROPERTY()
-	bool bDash=false;
+	bool isSlide = false;
+
+	UPROPERTY()
+	bool isDash = true;
+
+	UPROPERTY()
+	int DashCoolTime = 500;
 
 	UFUNCTION()
 	void MoveForward(float Value);

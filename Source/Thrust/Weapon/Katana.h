@@ -20,5 +20,5 @@ public:
 	AKatana();	
 	virtual void Tick(float DeltaTime) override;
 	virtual bool Skill(FVector Hit) override;
-	virtual void Attack()override;
+	virtual void Attack(FVector hit)override;
 };

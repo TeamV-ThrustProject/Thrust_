@@ -21,7 +21,7 @@ protected:
 
 public:	
 
-	UStaticMeshComponent* CubeMesh;
+	UStaticMeshComponent* Body;
 
 
 	// Called every frame

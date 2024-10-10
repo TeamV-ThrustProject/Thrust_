@@ -36,7 +36,7 @@ void ARifle::BeginPlay()
 
 }
 
-void ARifle::Attack()
+void ARifle::Attack(FVector hit)
 {
 	if (bReload)
 		return;
@@ -45,7 +45,9 @@ void ARifle::Attack()
 
 	AActor *bullet = GetWorld()->SpawnActor<AActor>(ABullet::StaticClass());
 	bullet->SetActorLocation(BulletSpawnLocation->GetActorLocation());
-	bullet->SetActorRotation(BulletSpawnLocation->GetActorRotation());
+
+	bullet->SetActorRotation(FRotationMatrix::MakeFromX((hit - BulletSpawnLocation->GetActorLocation()).GetSafeNormal()).Rotator());
+	
 	Bullet--;
 	bCanAttack = false;
 

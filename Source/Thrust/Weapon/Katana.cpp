@@ -61,7 +61,7 @@ bool AKatana::Skill(FVector Hit)
 	return true;
 }
 
-void AKatana::Attack()
+void AKatana::Attack(FVector hit)
 {
 	UE_LOG(LogTemp, Warning, TEXT("katana attack"));
 	bCanAttack = false;

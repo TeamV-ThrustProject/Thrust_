@@ -36,7 +36,7 @@ AThrustCharacter::AThrustCharacter()
     springArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
     springArmComponent->SetupAttachment(RootComponent);
     springArmComponent->SetRelativeLocation(FVector(0, 0, 0));
-    springArmComponent->TargetArmLength = 150.0f;
+    springArmComponent->TargetArmLength = 300.0f;
     springArmComponent->bUsePawnControlRotation = true;
     springArmComponent->bDoCollisionTest = true;
     springArmComponent->ProbeSize = 12.0f; // 충돌을 감지하는 구의 크기
@@ -44,7 +44,7 @@ AThrustCharacter::AThrustCharacter()
     springArmComponent->bEnableCameraLag = true;
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
     CameraComponent->SetupAttachment(springArmComponent);
-    CameraComponent->SetRelativeLocation(FVector(39.4f, 0.0f, 110.0f));
+    CameraComponent->SetRelativeLocation(FVector(39.4f, 90.0f, 110.0f));
 
     CameraComponent->bUsePawnControlRotation = false;
 
@@ -90,16 +90,8 @@ void AThrustCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
     mw->Tick(DeltaTime);
     if(mw != nullptr)
-        if (bDash)
-        {
-            if (GetCharacterMovement()->MaxWalkSpeed < mw->DashMaxSpeed)
-                GetCharacterMovement()->MaxWalkSpeed += (mw->DashMaxSpeed - mw->WalkSpeed)/120;
-        }
-        else
-        {
-            if (GetCharacterMovement()->MaxWalkSpeed > mw->WalkSpeed)
-                GetCharacterMovement()->MaxWalkSpeed -= (mw->DashMaxSpeed - mw->WalkSpeed) / 60;
-        }
+        if (GetCharacterMovement()->MaxWalkSpeed < mw->DashMaxSpeed)
+            GetCharacterMovement()->MaxWalkSpeed += (mw->DashMaxSpeed - mw->WalkSpeed)/120;
     else 
         UE_LOG(LogTemp, Warning, TEXT("cast error"));
 
@@ -108,7 +100,7 @@ void AThrustCharacter::Tick(float DeltaTime)
     {
         if (mw->bCanAttack)
         {
-            mw->Attack();
+            mw->Attack(h);
         }
     }
 
@@ -124,6 +116,13 @@ void AThrustCharacter::Tick(float DeltaTime)
         {
             h = HitResult.ImpactPoint;
         }
+    }
+
+    if (!isDash)
+    {
+        DashCoolTime--;
+        if (DashCoolTime == 0)
+            isDash = true;
     }
 
 }
@@ -203,12 +202,14 @@ void AThrustCharacter::Dash()
     {
         Dash *= 4000;
     }
-
-    if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
-    {
-        Dash += FVector(0, 0, 200);
-        LaunchCharacter(Dash, true, true);
-    }
+    if (isDash)
+        if (GetCharacterMovement()->Velocity != FVector::ZeroVector)
+        {
+            Dash += FVector(0, 0, 200);
+            LaunchCharacter(Dash, true, true);
+            isDash = false;
+            DashCoolTime = 500;
+        }
 }
 
 void AThrustCharacter::StartAttack()
